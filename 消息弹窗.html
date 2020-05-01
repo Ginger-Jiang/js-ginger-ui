@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      .g-mask {
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 999;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+      }
+      .g-message {
+        background-color: #fff;
+        z-index: 9999;
+        position: absolute;
+        top: 20%;
+        left: 50%;
+        transform: translateX(-50%);
+        box-sizing: border-box;
+        padding: 10px 20px;
+        border-radius: 4px;
+        box-shadow: inset;
+        display: flex;
+        flex-direction: column;
+      }
+      .g-message h3 {
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .txt {
+        margin: 20px 0;
+        color: #999;
+      }
+      .btns {
+        align-self: flex-end;
+      }
+      button {
+        box-sizing: border-box;
+        padding: 4px 6px;
+        border: 1px solid #999;
+        margin: 0 5px;
+      }
+    </style>
+    <title>消息弹窗</title>
+  </head>
+  <body>
+    <main>
+      <button class="btn">弹个窗~</button>
+    </main>
+    <!-- <div class="g-mask">
+      <div class="g-message">
+        <h3>标题</h3>
+        <div class="txt">是心动啊, 糟糕眼神躲不掉~</div>
+        <div class="btns">
+          <button>取消</button>
+          <button>确认</button>
+        </div>
+      </div>
+    </div> -->
+    <script>
+      class Message {
+        constructor(options) {
+          this.opt = Object.assign(
+            {
+              width: '300px',
+              height: '200px',
+              contentTxt: '默认内容',
+              isDetermine: true,
+              isCancel: true,
+            },
+            options
+          )
+          this.init()
+        }
+        init() {
+          this.renderView()
+
+          this.el.querySelector('.cancel').addEventListener('click', () => {
+            this.close()
+          })
+        }
+        renderView() {
+          this.el = document.createElement('div')
+          this.el.innerHTML = `
+          <div class="g-mask">
+            <div class="g-message" style="width:${this.opt.width}; height: ${
+            this.opt.height
+          }">
+              <h3>标题</h3>
+              <div class="txt">${this.opt.contentTxt}</div>
+              <div class="btns">
+                <button class="cancel" style="display: ${
+                  this.opt.isCancel ? 'inner-flex' : 'none'
+                }">取消</button>
+                <button>确认</button>
+              </div>
+            </div>
+          </div>
+          `
+          this.el.querySelector('.g-mask').style.display = 'block'
+          document.querySelector('body').appendChild(this.el)
+        }
+        close() {
+          document.querySelector('body').removeChild(this.el)
+        }
+      }
+      document.querySelector('.btn').onclick = function () {
+        new Message({
+          width: '300px',
+          height: '150px',
+          contentTxt: '传入的内容',
+          isCancel: true,
+        })
+      }
+    </script>
+  </body>
+</html>
