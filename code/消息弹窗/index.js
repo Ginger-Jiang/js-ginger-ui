@@ -4,11 +4,6 @@
  *    自定义事件
  *    传入配置
  *    传入回调
- * 
- * 待更新....
- * 是否可以拖拽
- * 迭代2： 自定义事件更换为 浏览器api 自定义事件 customEvent
- * 迭代3： 添加input框   回调返回 input 值
  */
 
 class myMessage extends myEvent {
@@ -22,7 +17,9 @@ class myMessage extends myEvent {
       cancelText: '取消',
       showConfirm: true,
       confirmText: '确定',
-      isInput: false,
+      dragable: true, //是否可拖拽
+      maskable: true, //是否有遮罩
+      isInput: false, // 是否是 input 框
       confirm() {
         console.log('默认配置, 点击了确定');
       },
@@ -40,22 +37,25 @@ class myMessage extends myEvent {
 
     this.el.querySelector('.g-message-box').addEventListener('click', e => {
       switch (e.target.className) {
+        case "g-button cancel":
         case "g-message-box_headerbtn":
           this.trigger('cancel')
           this.close()
           break
-        case "confirm":
+        case "g-button confirm":
           this.trigger('confirm')
           this.close()
           break
       }
-    })
+    }, false)
   }
+
   randerView() {
     const el = document.createElement('div')
+    el.classList.add('g-message-box_wrapper')
+    el.style.zIndex = 2020
     el.innerHTML = `
-    <div class="g-message-box_wrapper">
-      <div class="g-message-box" style="width:${this.opt.width}px">
+      <div class="g-message-box" style="z-index: 2020; width:${this.opt.width}px">
         <div class="g-message-box_header">
           <div class="g-message-box_title">
             <span>${this.opt.title}</span>
@@ -65,7 +65,7 @@ class myMessage extends myEvent {
           </button>
         </div>
         <div class="g-message-box_content">
-          <div class="g-message-box_container">
+          <div class="g-message-box_container" style="display: ${this.opt.isInput ? 'none' : 'block'}">
             <div class="g-message-box_message">
               <p>${this.opt.content}</p>
             </div>
@@ -77,35 +77,49 @@ class myMessage extends myEvent {
           </div>
         </div>
         <div class="g-message-box_btns">
-          <button class="g-button" style="display: ${this.opt.showCancel ? 'inner' : 'none'}">
-            <span class="cancel">${this.opt.cancelText}</span>
+          <button class="g-button cancel" style="display: ${this.opt.showCancel ? 'inner' : 'none'}">
+            ${this.opt.cancelText}
           </button>
-          <button class="g-button" style="display: ${this.opt.showConfirm ? 'inner' : 'none'}">
-            <span class="confirm">${this.opt.confirmText}</span>
+          <button class="g-button confirm" style="display: ${this.opt.showConfirm ? 'inner' : 'none'}">
+            ${this.opt.confirmText}
           </button>
         </div>
       </div>
-    </div>
-    `
+      `
     document.body.appendChild(el)
+
+    if (this.opt.maskable) {
+      const mask = document.createElement('div')
+      mask.classList.add('mask')
+      mask.style.zIndex = 2000
+      document.body.appendChild(mask)
+    }
+
     this.el = el
   }
   close() {
     document.body.removeChild(this.el)
+    document.body.removeChild(document.querySelector('.mask'))
   }
 }
 
 document.querySelector('.test-btn').onclick = function () {
   new myMessage({
+    width: 420,
     title: '警告',
-    content: '确定要删除嘛?',
+    content: '确定要删除嘛',
     showCancel: true,
-    cancelText: '再看看',
+    cancelText: '取消',
     showConfirm: true,
-    confirmText: '删除',
-    isInput: false,
+    confirmText: '确定',
+    dragable: true, //是否可拖拽
+    maskable: true, //是否有遮罩
+    isInput: false, // 是否是 input 框
     confirm() {
-      console.log('传入确定回调');
+      console.log('传入配置, 点击了确定');
+    },
+    cancel() {
+      console.log('传入配置, 点击了取消');
     }
   })
 }
